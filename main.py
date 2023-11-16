@@ -15,6 +15,8 @@ import json
 
 import paho.mqtt.publish as publish
 
+DEBUG = False
+
 mqtt_topic = "sensors_data"
 mqtt_host = "localhost"
 
@@ -44,13 +46,14 @@ IIC_MODE         = 0x01            # default use IIC1
 ozone = DFRobot_Ozone_IIC(IIC_MODE ,OZONE_ADDRESS_3)
 ozone.set_mode(MEASURE_MODE_AUTOMATIC)
 
-print("TSL2591 Light I2C address:0X29")
-print("LTR390 UV I2C address:0X53")
-print("SGP40 VOC I2C address:0X59")
-#print("icm20948 9-DOF I2C address:0X68")
-print("bme280 T&H I2C address:0X76")
-print("Ozone address:0X73")
-print("Flame Sensor:GPIO24")
+if DEBUG:
+    print("TSL2591 Light I2C address:0X29")
+    print("LTR390 UV I2C address:0X53")
+    print("SGP40 VOC I2C address:0X59")
+    #print("icm20948 9-DOF I2C address:0X68")
+    print("bme280 T&H I2C address:0X76")
+    print("Ozone address:0X73")
+    print("Flame Sensor:GPIO24")
 
 try:
     while True:
@@ -77,15 +80,16 @@ try:
         
         flame_sensor = GPIO.input(flame_sensor_pin)
         
-        print("==================================================")
-        print("pressure : %7.2f hPa" %pressure)
-        print("temp : %-6.2f ℃" %temp)
-        print("hum : %6.2f ％" %hum)
-        print("lux : %d " %lux)
-        print("uv : %d " %UVS)
-        print("gas : %6.2f VOC" %voc_index)
-        print("ozone : %6.3f ppm" %ozone_concentration_ppm)
-        print("flame : %d" %flame_sensor) 
+        if DEBUG:
+            print("==================================================")
+            print("pressure : %7.2f hPa" %pressure)
+            print("temp : %-6.2f ℃" %temp)
+            print("hum : %6.2f ％" %hum)
+            print("lux : %d " %lux)
+            print("uv : %d " %UVS)
+            print("gas : %6.2f VOC" %voc_index)
+            print("ozone : %6.3f ppm" %ozone_concentration_ppm)
+            print("flame : %d" %flame_sensor) 
         
         """
         0-50: Excellent air quality - Very low levels of pollutants, suitable for indoor environments like homes and offices.

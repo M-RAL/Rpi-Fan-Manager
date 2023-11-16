@@ -1,0 +1,13 @@
+# /etc/systemd/system/FanController_mqtt.service
+[Unit]
+Description=FanController_mqtt.Service ... FanController/main.py
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/FanController/main.py
+WorkingDirectory=/home/pi/FanController/
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

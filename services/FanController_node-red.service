@@ -1,0 +1,12 @@
+# /etc/systemd/system/FanController_node-red.service
+[Unit]
+Description=FanController_node-red.Service
+After=network-online.target
+
+[Service]
+ExecStart=/bin/bash node-red-start
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
