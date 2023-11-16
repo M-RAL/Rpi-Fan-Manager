@@ -1,0 +1,3 @@
+mosquito
+paho.mqtt
+pip install RPi.GPIO
