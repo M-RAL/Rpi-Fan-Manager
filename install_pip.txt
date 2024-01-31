@@ -1,3 +1,6 @@
 mosquito
 paho.mqtt
 pip install RPi.GPIO
+
+sudo systemctl enable ntfy (https://docs.ntfy.sh/install/#__tabbed_2_2)
+(also https://pimylifeup.com/raspberry-pi-ntfy/)

@@ -1,0 +1,17 @@
+{
+  "temperature": {
+    "temperatureMin": 1,
+    "temperatureMax": 2,
+    "temperatureActionsEnabled": true,
+    "temperatureActionsLowerMin": 3
+  },
+  "ozone": {
+    "ozoneMax": 4,
+    "ozoneActionsEnabled": true,
+    "ozoneActionsIncrease": 5
+  },
+  "humidity": {
+    "humidityMin": 6,
+    "humidityMax": 7
+  }
+}

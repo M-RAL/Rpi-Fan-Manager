@@ -1,0 +1,11 @@
+{
+  "ntfy": {
+    "ntfyEnabled": false,
+    "ntfyUrl": "https://ntfy.sh/test_cpu"
+  },
+  "winterMode": {
+    "winterEnabled": false,
+    "winterFansDurationOn": 2,
+    "winterDelayNext": 4
+  }
+}
