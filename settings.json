@@ -7,5 +7,6 @@
     "winterEnabled": false,
     "winterFansDurationOn": 2,
     "winterDelayNext": 4
-  }
+  },
+  "fansStatus": 0
 }

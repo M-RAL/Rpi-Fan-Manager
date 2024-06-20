@@ -13,9 +13,13 @@
                 "view-show-welcome-tours": true
             },
             "tours": {
-                "welcome": "3.0.2"
+                "welcome": "3.1.10"
             }
         },
-        "menu-menu-item-sidebar": true
+        "menu-menu-item-sidebar": true,
+        "debug": {
+            "filter": "filterAll",
+            "filteredNodes": []
+        }
     }
 }

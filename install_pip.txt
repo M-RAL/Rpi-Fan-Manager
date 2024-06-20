@@ -1,6 +1,35 @@
+pip:(pip install ...) 
+and sudo apt-get install...
+
 mosquito
 paho.mqtt
-pip install RPi.GPIO
+RPi.GPIO
 
+smbus
+
+ENABLE I2C 1
+
+Steps to install ntfy:
 sudo systemctl enable ntfy (https://docs.ntfy.sh/install/#__tabbed_2_2)
 (also https://pimylifeup.com/raspberry-pi-ntfy/)
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://archive.heckel.io/apt/pubkey.txt | sudo gpg --dearmor -o /etc/apt/keyrings/archive.heckel.io.gpg
+sudo apt install apt-transport-https
+sudo sh -c "echo 'deb [arch=armhf signed-by=/etc/apt/keyrings/archive.heckel.io.gpg] https://archive.heckel.io/apt debian main' \
+    > /etc/apt/sources.list.d/archive.heckel.io.list"
+sudo apt update
+sudo apt install ntfy
+
+sudo mv /etc/ntfy/server.yml /etc/ntfy/server.bkup
+
+sudo nano /etc/ntfy/server.yml
+
+base-url: "https://ntfy.sh/test_rf"
+listen-http: ":80"
+cache-file: "/var/cache/ntfy/cache.db"
+attachment-cache-dir: "/var/cache/ntfy/attachments"
+
+sudo systemctl start ntfy
+
+sudo systemctl enable ntfy

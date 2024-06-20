@@ -15,6 +15,9 @@ import json
 
 import paho.mqtt.publish as publish
 
+import subprocess
+import re
+
 DEBUG = False
 
 mqtt_topic = "sensors_data"
@@ -54,6 +57,32 @@ if DEBUG:
     print("bme280 T&H I2C address:0X76")
     print("Ozone address:0X73")
     print("Flame Sensor:GPIO24")
+    
+current_temp = 0
+fans = ["fan1", "fan2", "fan3"]
+
+with open("fanTestStatus.bin", "w") as f:
+  f.write("0") 
+
+def getPluggedDevices():
+    # Execute the command with sudo (replace password prompt handling if needed)
+  process = subprocess.Popen(["sudo", "python3", "-m", "liquidctl", "-v", "list"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, error = process.communicate()
+
+  # Check for errors
+  if error:
+      print(f"Error retrieving device info: {error.decode()}")
+      return []
+
+  # Decode output and search for serial numbers
+  output_str = output.decode()
+  serial_numbers = []
+  for match in re.finditer(r"Serial number: (.*)", output_str, re.MULTILINE):
+      serial_numbers.append(match.group(1))
+
+  # Return the list of serial numbers (or empty list if none found)
+  return serial_numbers
+    
 
 try:
     while True:
@@ -124,6 +153,79 @@ try:
         json_data = json.dumps(data)
         publish.single(mqtt_topic, json_data, hostname=mqtt_host)
         
+        #------------ settings processing --------------
+        with open("fanTestStatus.bin") as f:
+            fanTestStatus = f.read()
+            if (fanTestStatus == "1"):
+                time.sleep(1)
+                continue
+        
+        if ((current_temp+1.0) > temp or (current_temp-1.0) < temp):
+            
+            current_temp = temp
+            
+            pluggedDevices = getPluggedDevices()
+            
+            
+            
+            if pluggedDevices:
+                #print("NZXT Device Serial Numbers:")
+                for i, serial in enumerate(pluggedDevices):
+                    #print(f"  Device {i+1}: {serial}")
+                    
+                    # Open the JSON file
+                    with open("fancontrol"+serial+".json") as f:
+                        data = json.load(f)
+                    try:
+                        for fan in fans:
+
+                            # Get fan1 temp and speed data
+                            fan1_temp = [float(t) for t in data["fanSettings"][serial][fan]["temp"]]
+                            fan1_speed = [float(s) for s in data["fanSettings"][serial][fan]["speed"]]
+
+                            # Find indices of closest temperatures (lower and upper)
+                            index_temp = 0
+                            if current_temp > fan1_temp[0]:
+                                for i in range(len(fan1_temp)):
+                                    if (current_temp > fan1_temp[i] and current_temp < fan1_temp[i+1]):
+                                        index_temp = i+1
+                                        break
+                            
+                            # Check for exact match
+                            if (index_temp == 0):
+                                calculated_speed = fan1_speed[0]
+                            elif (index_temp == len(fan1_temp)):
+                                calculated_speed = fan1_speed[-1]
+                            else:
+                                if ((fan1_temp[index_temp-1] == fan1_temp[index_temp])):
+                                    calculated_speed = fan1_speed[index_temp]
+                                else:
+
+                                    weight = ( fan1_speed[index_temp] - fan1_speed[index_temp-1] ) / (fan1_temp[index_temp] - fan1_temp[index_temp-1])
+                                    
+                                    # Interpolate speed based on weight
+                                    calculated_speed = weight * ( current_temp - fan1_temp[index_temp-1] ) + fan1_speed[index_temp-1]
+                                    
+                            # Print the calculated speed
+                            #print(f"Calculated fan speed for {current_temp}°C: {calculated_speed:.2f}%")
+                            
+                            # set calculated speed
+
+                            command = ["sudo", "python", "-m", "liquidctl", "--serial", serial, "set", fan, "speed", str(round(calculated_speed))]
+
+                            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                            output, error = process.communicate()
+
+                            if output:
+                                print(output.decode())
+                            if error:
+                                print("Error:", error.decode())
+                    except:
+                        print("No serial number found")
+            else:
+                print("No NZXT devices found.")                    
+                            
+                        
         time.sleep(1)
 
 except KeyboardInterrupt:
