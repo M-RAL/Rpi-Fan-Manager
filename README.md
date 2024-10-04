@@ -14,3 +14,5 @@ Fire Sensor Analog: https://www.amazon.fr/10Gtek-Intelligent-Detection-Temperatu
 Ozone Sensor: https://store.arduino.cc/en-fr/products/gravity-i2c-ozone-sensor-0-10ppm
 
 
+The Source Code is on the Master branch:
+https://github.com/M-RAL/Rpi-Fan-Manager/blob/master/README.md
